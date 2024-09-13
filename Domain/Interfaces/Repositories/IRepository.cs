@@ -12,6 +12,6 @@ namespace Domain.Interfaces.Repositories
         Task<IEnumerable<TEntity>> GetAll();
         Task<TEntity> Create(TEntity Tentity);
         Task<TEntity> Update(TId id, TEntity Tentity);
-        Task<Guid> Delete(TId id);
+        Task<TId> Delete(TId id);
     }
 }
