@@ -1,5 +1,11 @@
+using Domain.Entities;
+using Domain.Interfaces.Repositories;
 using Infrastructure.Data;
+using Infrastructure.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using System.Security.Cryptography;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

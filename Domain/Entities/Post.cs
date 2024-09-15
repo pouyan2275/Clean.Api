@@ -11,7 +11,7 @@ namespace Domain.Entities
 {
     public class Post : IBaseEntity<Guid>
     {
-        public required string Title { get; set; }
+        public string? Title { get; set; }
         public string? Content { get; set; }
         public Guid? CategoryId { get; set; }
         public Guid Id { get; set; }

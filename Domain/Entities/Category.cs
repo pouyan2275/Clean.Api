@@ -10,7 +10,7 @@ namespace Domain.Entities
 {
     public class Category : IBaseEntity<Guid>
     {   
-        public required string Title { get; set; }
+        public string? Title { get; set; }
         public Guid Id { get; set; }
         public Guid CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }

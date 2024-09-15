@@ -8,10 +8,13 @@ namespace Domain.Interfaces.Repositories
 {
     public interface IRepository<TEntity,TId>
     {
-        Task<TEntity> GetById(TId id);
-        Task<IEnumerable<TEntity>> GetAll();
-        Task<TEntity> Create(TEntity Tentity);
-        Task<TEntity> Update(TId id, TEntity Tentity);
-        Task<TId> Delete(TId id);
+        IQueryable Table { get; }
+        public IQueryable TableAsNoTracking { get; }
+        Task<TEntity> GetByIdAsync(TId id, CancellationToken ct = default);
+        Task<List<TEntity>> GetAllAsync(CancellationToken ct = default);
+        Task<TEntity> CreateAsync(TEntity Tentity, bool saveChange = true, CancellationToken ct = default);
+        Task<TEntity> UpdateAsync(TId id, TEntity Tentity, bool saveChange = true, CancellationToken ct = default);
+        Task DeleteAsync(TId id, CancellationToken ct = default);
+        Task SaveChangesAsync(CancellationToken ct = default);
     }
 }
