@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces.Repositories
 {
-    public interface IPostRepository : IRepository<Post,Guid>
+    public interface IPostRepository : IRepository<Post>
     {
     }
 }

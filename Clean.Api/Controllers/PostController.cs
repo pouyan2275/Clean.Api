@@ -7,7 +7,7 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController : CrudController<Post, Post, Post, Guid>
+    public class PostController : CrudController<Post, Post, Post>
     {
         public PostController(IPostRepository repository) : base(repository)
         {

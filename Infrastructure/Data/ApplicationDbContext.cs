@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Interfaces.Entities;
 using Infrastructure.Data.OnConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -17,13 +18,10 @@ namespace Infrastructure.Data
         {
         }
 
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Post> Posts { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new PostOnConfiguration());
-            modelBuilder.ApplyConfiguration(new CategoryOnConfiguration());
+            var configurations = typeof(IEntityTypeConfiguration<>).Assembly;
+            modelBuilder.ApplyConfigurationsFromAssembly(configurations);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

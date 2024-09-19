@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Data.Repositories
 {
-    public class PostRepository : Repository<Post, Guid>, IPostRepository
+    public class PostRepository : Repository<Post>, IPostRepository
     {
         public PostRepository(ApplicationDbContext dbContext) : base(dbContext)
         {

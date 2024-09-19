@@ -11,8 +11,8 @@ using System.Reflection;
 
 namespace Infrastructure.Data.Repositories;
 
-public class Repository<Tentity, Tid> : IRepository<Tentity, Tid>
-    where Tentity :class, new()
+public class Repository<Tentity> : IRepository<Tentity>
+    where Tentity :class
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly DbSet<Tentity> Entity;
@@ -44,13 +44,13 @@ public class Repository<Tentity, Tid> : IRepository<Tentity, Tid>
 
         return result;
     }
-    public virtual async Task<Tentity> GetByIdAsync(Tid id, CancellationToken ct = default)
+    public virtual async Task<Tentity?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         var record = await Entity.FirstOrDefaultAsync(x => x.GetType().GetProperty("Id")!.GetValue(x)!.ToString() == id!.ToString(),ct);
-        return new Tentity();
+        return record;
     }
 
-    public virtual async Task<Tentity> UpdateAsync(Tid id, Tentity Tentity, bool saveChange = true, CancellationToken ct = default)
+    public virtual async Task<Tentity> UpdateAsync(Guid id, Tentity Tentity, bool saveChange = true, CancellationToken ct = default)
     {
         var record = await GetByIdAsync(id);
         var result = Entity.Update(Tentity);
@@ -59,9 +59,9 @@ public class Repository<Tentity, Tid> : IRepository<Tentity, Tid>
         return Tentity;
     }
 
-    public virtual async Task DeleteAsync(Tid id, CancellationToken ct = default)
+    public virtual async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
         var record = await GetByIdAsync(id);
-        var result = Entity.Remove(record);
+        var result = Entity.Remove(record!);
     }
 }

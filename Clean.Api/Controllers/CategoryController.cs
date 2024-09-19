@@ -7,7 +7,7 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : CrudController<Category, Category, Category, Guid>
+    public class CategoryController : CrudController<Category, Category, Category>
     {
         public CategoryController(ICategoryRepository repository) : base(repository)
         {

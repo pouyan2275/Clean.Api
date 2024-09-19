@@ -6,19 +6,19 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CrudController<TEntity, TId>(IRepository<TEntity, TId> repository) : CrudController<TEntity, TEntity, TEntity, TId>(repository){}
-    public class CrudController<TDto,TEntity, TId>(IRepository<TEntity, TId> repository) : CrudController<TDto, TDto, TEntity, TId>(repository){}
+    public class CrudController<TEntity>(IRepository<TEntity> repository) : CrudController<TEntity, TEntity, TEntity>(repository){}
+    public class CrudController<TDto,TEntity>(IRepository<TEntity> repository) : CrudController<TDto, TDto, TEntity>(repository){}
 
-    public class CrudController<TDto, TDtoSelect, TEntity, TId> : ControllerBase
+    public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     {
-        private readonly IRepository<TEntity, TId> _repository;
+        private readonly IRepository<TEntity> _repository;
 
-        public CrudController(IRepository<TEntity, TId> repository)
+        public CrudController(IRepository<TEntity> repository)
         {
             _repository = repository;
         }
         [HttpGet("{id}")]
-        public virtual async Task<ActionResult<TEntity>> GetById(TId id, CancellationToken ct = default)
+        public virtual async Task<ActionResult<TEntity>> GetById(Guid id, CancellationToken ct = default)
         {
             var result = await _repository.GetByIdAsync(id, ct);
             return Ok(result);
@@ -39,14 +39,14 @@ namespace Api.Controllers
         }
 
         [HttpPut("[action]")]
-        public virtual async Task<ActionResult<TEntity>> Update(TId id, TEntity Tentity, CancellationToken ct = default)
+        public virtual async Task<ActionResult<TEntity>> Update(Guid id, TEntity Tentity, CancellationToken ct = default)
         {
             var result = await _repository.UpdateAsync(id, Tentity, ct: ct);
             return Ok(result);
         }
 
         [HttpDelete("[action]")]
-        public virtual async Task<ActionResult> Delete(TId id, CancellationToken ct = default)
+        public virtual async Task<ActionResult> Delete(Guid id, CancellationToken ct = default)
         {
             await _repository.DeleteAsync(id, ct: ct);
             return Ok();
