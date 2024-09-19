@@ -25,7 +25,7 @@ public class Repository<Tentity, Tid> : IRepository<Tentity, Tid>
         Entity = _dbContext.Set<Tentity>();
     }
 
-    public virtual async Task<Tentity> CreateAsync(Tentity Tentity,bool saveChange = true,CancellationToken ct = default)
+    public virtual async Task<Tentity> AddAsync(Tentity Tentity,bool saveChange = true,CancellationToken ct = default)
     {   
         var result = await Entity.AddAsync(Tentity,ct);
         if (saveChange)
