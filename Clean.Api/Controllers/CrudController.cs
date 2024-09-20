@@ -16,6 +16,12 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     {
         _repository = repository;
     }
+    /// <summary>
+    /// Get By Id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
     [HttpGet("{id}")]
     public virtual async Task<ActionResult<TEntity>> GetById(Guid id, CancellationToken ct = default)
     {
@@ -23,6 +29,11 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Get All
+    /// </summary>
+    /// <param name="ct"></param>
+    /// <returns></returns>
     [HttpGet("[action]")]
     public virtual async Task<ActionResult<List<TEntity>>> GetAll(CancellationToken ct = default)
     {
@@ -30,6 +41,12 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Create New
+    /// </summary>
+    /// <param name="Tentity"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
     [HttpPost("[action]")]
     public virtual async Task<ActionResult<TEntity>> Add(TEntity Tentity, CancellationToken ct = default)
     {
@@ -38,6 +55,13 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Edit a Entity
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="Tentity"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
     [HttpPut("[action]")]
     public virtual async Task<ActionResult<TEntity>> Update(Guid id, TEntity Tentity, CancellationToken ct = default)
     {
@@ -46,7 +70,13 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete("[action]")]
+    /// <summary>
+    /// Delete a Entity
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    [HttpDelete("[action]{id}")]
     public virtual async Task<ActionResult> Delete(Guid id, CancellationToken ct = default)
     {
         await _repository.DeleteAsync(id, ct: ct);
