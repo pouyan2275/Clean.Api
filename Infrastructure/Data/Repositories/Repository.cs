@@ -24,12 +24,12 @@ public class Repository<TEntity> : IRepository<TEntity>
 
     public virtual async Task SaveChangesAsync( CancellationToken ct = default)
     {
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(ct);
     }
 
     public virtual async Task<List<TEntity>> GetAllAsync(CancellationToken ct = default)
     {
-        var result = await Entity.ToListAsync();
+        var result = await Entity.ToListAsync(cancellationToken: ct);
 
         return result;
     }
