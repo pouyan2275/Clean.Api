@@ -1,5 +1,6 @@
 ﻿using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
@@ -23,7 +24,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    public virtual async Task<ActionResult<TEntity>> GetById(Guid id, CancellationToken ct = default)
+    public virtual async Task<ActionResult<TEntity?>> GetById(Guid id, CancellationToken ct = default)
     {
         var result = await _repository.GetByIdAsync(id, ct);
         return Ok(result);
@@ -50,7 +51,20 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpPost("[action]")]
     public virtual async Task<ActionResult<TEntity>> Add(TEntity Tentity, CancellationToken ct = default)
     {
-        var result = await _repository.AddAsync(Tentity,ct:ct);
+        Guid newId;
+        bool guidUsed;
+        do
+        {
+            newId = Guid.NewGuid();
+            guidUsed =  await _repository.GetByIdAsync(newId, ct) != null;
+        } while (guidUsed);
+
+        GetType().GetProperty("CreatedOn")?.SetValue(Tentity,DateTime.UtcNow);
+        GetType().GetProperty("CreatedBy")?.SetValue(Tentity,default);
+        GetType().GetProperty("Id")?.SetValue(Tentity, newId);
+
+        var result = await _repository.TableAsNoTracking.FirstAsync(x => GetType().GetProperty("Id")!.GetValue(x)!.ToString() == newId.ToString(), cancellationToken: ct);
+        await _repository.AddAsync(Tentity,ct:ct);
         await _repository.SaveChangesAsync(ct);
         return Ok(result);
     }
@@ -65,8 +79,13 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpPut("[action]")]
     public virtual async Task<ActionResult<TEntity>> Update(Guid id, TEntity Tentity, CancellationToken ct = default)
     {
-        var result = await _repository.UpdateAsync(id, Tentity, ct: ct);
+        var entity = await _repository.GetByIdAsync(id,ct);
+        entity = Tentity;
+        GetType().GetProperty("ModifiedOn")?.SetValue(entity, DateTime.UtcNow);
+        GetType().GetProperty("ModifiedBy")?.SetValue(entity, default);
+        _repository.Update(Tentity);
         await _repository.SaveChangesAsync(ct);
+        var result = await _repository.TableAsNoTracking.FirstAsync(x => GetType().GetProperty("Id")!.GetValue(x)!.ToString() == id.ToString(), cancellationToken: ct);
         return Ok(result);
     }
 
