@@ -34,6 +34,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     public virtual async Task<ActionResult<TEntity>> Add(TEntity Tentity, CancellationToken ct = default)
     {
         var result = await _repository.AddAsync(Tentity,ct:ct);
+        await _repository.SaveChangesAsync(ct);
         return Ok(result);
     }
 
@@ -41,6 +42,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     public virtual async Task<ActionResult<TEntity>> Update(Guid id, TEntity Tentity, CancellationToken ct = default)
     {
         var result = await _repository.UpdateAsync(id, Tentity, ct: ct);
+        await _repository.SaveChangesAsync(ct);
         return Ok(result);
     }
 

@@ -12,8 +12,8 @@ namespace Domain.Interfaces.Repositories
         public IQueryable TableAsNoTracking { get; }
         Task<TEntity?> GetByIdAsync(Guid id, CancellationToken ct = default);
         Task<List<TEntity>> GetAllAsync(CancellationToken ct = default);
-        Task<TEntity> AddAsync(TEntity Tentity, bool saveChange = true, CancellationToken ct = default);
-        Task<TEntity> UpdateAsync(Guid id, TEntity Tentity, bool saveChange = true, CancellationToken ct = default);
+        Task<TEntity> AddAsync(TEntity Tentity, CancellationToken ct = default);
+        Task<TEntity> UpdateAsync(Guid id, TEntity Tentity, CancellationToken ct = default);
         Task DeleteAsync(Guid id, CancellationToken ct = default);
         Task SaveChangesAsync(CancellationToken ct = default);
     }

@@ -17,11 +17,9 @@ public class Repository<Tentity> : IRepository<Tentity>
         Entity = _dbContext.Set<Tentity>();
     }
 
-    public virtual async Task<Tentity> AddAsync(Tentity Tentity,bool saveChange = true,CancellationToken ct = default)
+    public virtual async Task<Tentity> AddAsync(Tentity Tentity,CancellationToken ct = default)
     {   
         var result = await Entity.AddAsync(Tentity,ct);
-        if (saveChange)
-            await _dbContext.SaveChangesAsync();
         return Tentity;
     }
 
@@ -42,12 +40,10 @@ public class Repository<Tentity> : IRepository<Tentity>
         return record;
     }
 
-    public virtual async Task<Tentity> UpdateAsync(Guid id, Tentity Tentity, bool saveChange = true, CancellationToken ct = default)
+    public virtual async Task<Tentity> UpdateAsync(Guid id, Tentity Tentity, CancellationToken ct = default)
     {
         var record = await GetByIdAsync(id);
         var result = Entity.Update(Tentity);
-        if (saveChange)
-            await _dbContext.SaveChangesAsync();
         return Tentity;
     }
 
