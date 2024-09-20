@@ -1,4 +1,5 @@
 ﻿using Domain.Interfaces.Repositories;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,10 +7,11 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CrudController<TEntity>(IRepository<TEntity> repository) : CrudController<TEntity, TEntity, TEntity>(repository){}
-public class CrudController<TDto,TEntity>(IRepository<TEntity> repository) : CrudController<TDto, TDto, TEntity>(repository){}
+public class CrudController<TEntity>(IRepository<TEntity> repository) : CrudController<TEntity, TEntity, TEntity>(repository) where TEntity : new() { }
+public class CrudController<TDto,TEntity>(IRepository<TEntity> repository)  : CrudController<TDto, TDto, TEntity>  (repository) where TEntity : new() { }
 
 public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
+    where TEntity : new()
 {
     private readonly IRepository<TEntity> _repository;
 
@@ -24,9 +26,9 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    public virtual async Task<ActionResult<TEntity?>> GetById(Guid id, CancellationToken ct = default)
+    public virtual async Task<ActionResult<TDtoSelect?>> GetById(Guid id, CancellationToken ct = default)
     {
-        var result = await _repository.GetByIdAsync(id, ct);
+        var result = (await _repository.GetByIdAsync(id, ct)).Adapt<TDtoSelect>();
         return Ok(result);
     }
 
@@ -36,9 +38,9 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpGet("[action]")]
-    public virtual async Task<ActionResult<List<TEntity>>> GetAll(CancellationToken ct = default)
+    public virtual async Task<ActionResult<List<TDtoSelect>>> GetAll(CancellationToken ct = default)
     {
-        var result = await _repository.GetAllAsync(ct);
+        var result = (await _repository.GetAllAsync(ct)).Adapt<List<TDtoSelect>>();
         return Ok(result);
     }
 
@@ -49,23 +51,28 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpPost("[action]")]
-    public virtual async Task<ActionResult<TEntity>> Add(TEntity Tentity, CancellationToken ct = default)
+    public virtual async Task<ActionResult<TDtoSelect>> Add(TDto Tentity, CancellationToken ct = default)
     {
         Guid newId;
         bool guidUsed;
+        TEntity entity = new();
+
         do
         {
             newId = Guid.NewGuid();
             guidUsed =  await _repository.GetByIdAsync(newId, ct) != null;
         } while (guidUsed);
 
-        GetType().GetProperty("CreatedOn")?.SetValue(Tentity,DateTime.UtcNow);
-        GetType().GetProperty("CreatedBy")?.SetValue(Tentity,default);
-        GetType().GetProperty("Id")?.SetValue(Tentity, newId);
+        entity = Tentity.Adapt<TEntity>();
 
-        var result = await _repository.TableAsNoTracking.FirstAsync(x => GetType().GetProperty("Id")!.GetValue(x)!.ToString() == newId.ToString(), cancellationToken: ct);
-        await _repository.AddAsync(Tentity,ct:ct);
-        await _repository.SaveChangesAsync(ct);
+        entity?.GetType().GetProperty("CreatedOn")?.SetValue(entity, DateTime.UtcNow);
+        entity?.GetType().GetProperty("CreatedBy")?.SetValue(entity, default(Guid));
+        entity?.GetType().GetProperty("Id")?.SetValue(entity, newId);
+ 
+        await _repository.AddAsync(entity, ct:ct);
+
+        var result = await _repository.GetByIdAsync(newId,ct);
+
         return Ok(result);
     }
 
@@ -77,15 +84,18 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpPut("[action]")]
-    public virtual async Task<ActionResult<TEntity>> Update(Guid id, TEntity Tentity, CancellationToken ct = default)
+    public virtual async Task<ActionResult<TDtoSelect>> Update(Guid id, TDto Tentity, CancellationToken ct = default)
     {
-        var entity = await _repository.GetByIdAsync(id,ct);
-        entity = Tentity;
-        GetType().GetProperty("ModifiedOn")?.SetValue(entity, DateTime.UtcNow);
-        GetType().GetProperty("ModifiedBy")?.SetValue(entity, default);
-        _repository.Update(Tentity);
-        await _repository.SaveChangesAsync(ct);
-        var result = await _repository.TableAsNoTracking.FirstAsync(x => GetType().GetProperty("Id")!.GetValue(x)!.ToString() == id.ToString(), cancellationToken: ct);
+        TEntity entity = await _repository.GetByIdAsync(id, ct) ?? throw new Exception("Not Found");
+
+        entity = Tentity.Adapt<TEntity>();
+
+        entity?.GetType().GetProperty("ModifiedOn")?.SetValue(entity, DateTime.UtcNow);
+        entity?.GetType().GetProperty("ModifiedBy")?.SetValue(entity, default(Guid));
+        entity?.GetType().GetProperty("Id")?.SetValue(entity, id);
+
+        await _repository.UpdateAsync(entity,ct:ct);
+        var result = await _repository.GetByIdAsync(id, ct);
         return Ok(result);
     }
 

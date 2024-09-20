@@ -34,6 +34,5 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Server=.;Database=CleanApi;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;");
     }
 }
