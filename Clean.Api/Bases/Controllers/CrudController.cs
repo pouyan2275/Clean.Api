@@ -3,7 +3,7 @@ using Domain.Bases.Interfaces.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Bases.Controllers;
 /// <summary>
 /// Restfull api
 /// </summary>
@@ -12,7 +12,7 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class CrudController<TEntity>(IRepository<TEntity> repository) : CrudController<TEntity, TEntity, TEntity>(repository) where TEntity : IBaseEntity { }
-public class CrudController<TDto,TEntity>(IRepository<TEntity> repository)  : CrudController<TDto, TDto, TEntity>  (repository) where TEntity : IBaseEntity { }
+public class CrudController<TDto, TEntity>(IRepository<TEntity> repository) : CrudController<TDto, TDto, TEntity>(repository) where TEntity : IBaseEntity { }
 
 public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     where TEntity : IBaseEntity
@@ -63,7 +63,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
         do
         {
             newId = Guid.NewGuid();
-            guidUsed =  await _repository.GetByIdAsync(newId, ct) != null;
+            guidUsed = await _repository.GetByIdAsync(newId, ct) != null;
         } while (guidUsed);
 
         var entity = Tentity.Adapt<TEntity>();
@@ -71,10 +71,10 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
         entity!.CreatedOn = DateTime.UtcNow;
         entity!.CreatedBy = default(Guid);
         entity!.Id = newId;
- 
-        await _repository.AddAsync(entity!, ct:ct);
 
-        var result = await _repository.GetByIdAsync(newId,ct);
+        await _repository.AddAsync(entity!, ct: ct);
+
+        var result = await _repository.GetByIdAsync(newId, ct);
 
         return Ok(result);
     }
@@ -89,7 +89,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpPut("[action]/{id}")]
     public virtual async Task<ActionResult<TDtoSelect>> Update(Guid id, TDto Tentity, CancellationToken ct = default)
     {
-        TEntity entity = await _repository.GetByIdAsync(id, ct) ?? throw new Exception("Not Found");        
+        TEntity entity = await _repository.GetByIdAsync(id, ct) ?? throw new Exception("Not Found");
 
         entity = Tentity.Adapt(entity);
 
@@ -97,7 +97,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
         entity!.ModifiedBy = default(Guid);
         entity!.Id = id;
 
-        await _repository.UpdateAsync(entity!,ct:ct);
+        await _repository.UpdateAsync(entity!, ct: ct);
         var result = await _repository.GetByIdAsync(id, ct);
         return Ok(result);
     }

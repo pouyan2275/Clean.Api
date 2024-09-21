@@ -12,12 +12,12 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var entities = Assembly.GetAssembly(typeof(IBaseEntity<>))?.GetTypes()
-        .Where(x => x.IsClass);
-        foreach (var entity in entities)
+        var entities = Assembly.GetAssembly(typeof(IBaseEntity))?.GetTypes()
+        .Where(x => x.IsClass).ToList();
+        entities?.ForEach(entity =>
         {
             modelBuilder.Entity(entity);
-        }
+        });
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }

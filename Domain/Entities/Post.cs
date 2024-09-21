@@ -9,7 +9,7 @@ using Domain.Interfaces;
 
 namespace Domain.Entities
 {
-    public class Post : IBaseEntity<Guid>
+    public class Post : IBaseEntity
     {
         public string? Title { get; set; }
         public string? Content { get; set; }

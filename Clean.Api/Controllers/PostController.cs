@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Api.Bases.Controllers;
+using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
