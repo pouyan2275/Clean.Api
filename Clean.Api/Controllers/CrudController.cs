@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
-
+/// <summary>
+/// Restfull api
+/// </summary>
+/// <typeparam name="TEntity"></typeparam>
+/// <param name="repository"></param>
 [Route("api/[controller]")]
 [ApiController]
 public class CrudController<TEntity>(IRepository<TEntity> repository) : CrudController<TEntity, TEntity, TEntity>(repository) where TEntity : new() { }
@@ -83,12 +87,16 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="Tentity"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpPut("[action]")]
+    [HttpPut("[action]{id}")]
     public virtual async Task<ActionResult<TDtoSelect>> Update(Guid id, TDto Tentity, CancellationToken ct = default)
     {
         TEntity entity = await _repository.GetByIdAsync(id, ct) ?? throw new Exception("Not Found");
+        //var c = new TypeAdapterConfig();
+        //c.NewConfig<TDto, TEntity>()
+        //    .IgnoreNonMapped(false);
+        
 
-        entity = Tentity.Adapt<TEntity>();
+        entity = Tentity.Adapt(entity);
 
         entity?.GetType().GetProperty("ModifiedOn")?.SetValue(entity, DateTime.UtcNow);
         entity?.GetType().GetProperty("ModifiedBy")?.SetValue(entity, default(Guid));
