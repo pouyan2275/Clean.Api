@@ -1,7 +1,6 @@
 ﻿using Domain.Interfaces.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 /// <summary>
