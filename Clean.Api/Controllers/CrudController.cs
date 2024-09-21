@@ -29,7 +29,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="id"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("[action]/{id}")]
     public virtual async Task<ActionResult<TDtoSelect?>> GetById(Guid id, CancellationToken ct = default)
     {
         var result = (await _repository.GetByIdAsync(id, ct)).Adapt<TDtoSelect>();
@@ -86,14 +86,10 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="Tentity"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpPut("[action]{id}")]
+    [HttpPut("[action]/{id}")]
     public virtual async Task<ActionResult<TDtoSelect>> Update(Guid id, TDto Tentity, CancellationToken ct = default)
     {
-        TEntity entity = await _repository.GetByIdAsync(id, ct) ?? throw new Exception("Not Found");
-        //var c = new TypeAdapterConfig();
-        //c.NewConfig<TDto, TEntity>()
-        //    .IgnoreNonMapped(false);
-        
+        TEntity entity = await _repository.GetByIdAsync(id, ct) ?? throw new Exception("Not Found");        
 
         entity = Tentity.Adapt(entity);
 
@@ -112,7 +108,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="id"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpDelete("[action]{id}")]
+    [HttpDelete("[action]/{id}")]
     public virtual async Task<ActionResult> Delete(Guid id, CancellationToken ct = default)
     {
         await _repository.DeleteAsync(id, ct: ct);
