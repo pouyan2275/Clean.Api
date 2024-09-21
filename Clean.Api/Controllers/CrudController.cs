@@ -59,7 +59,6 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     {
         Guid newId;
         bool guidUsed;
-        TEntity entity = new();
 
         do
         {
@@ -67,7 +66,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
             guidUsed =  await _repository.GetByIdAsync(newId, ct) != null;
         } while (guidUsed);
 
-        entity = Tentity.Adapt<TEntity>();
+        var entity = Tentity.Adapt<TEntity>();
 
         entity?.GetType().GetProperty("CreatedOn")?.SetValue(entity, DateTime.UtcNow);
         entity?.GetType().GetProperty("CreatedBy")?.SetValue(entity, default(Guid));
