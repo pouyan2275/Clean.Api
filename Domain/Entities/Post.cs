@@ -4,8 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Bases.Interfaces.Entities;
 using Domain.Interfaces;
-using Domain.Interfaces.Entities;
 
 namespace Domain.Entities
 {

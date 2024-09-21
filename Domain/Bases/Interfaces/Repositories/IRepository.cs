@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Interfaces.Repositories
+﻿namespace Domain.Bases.Interfaces.Repositories
 {
     public interface IRepository<TEntity>
     {
@@ -14,7 +8,7 @@ namespace Domain.Interfaces.Repositories
         public Task<List<TEntity>> GetAllAsync(CancellationToken ct = default);
         public Task AddAsync(TEntity Tentity, bool save = true, CancellationToken ct = default);
         public Task UpdateAsync(TEntity Tentity, bool save = true, CancellationToken ct = default);
-        public Task DeleteAsync(Guid id, CancellationToken ct = default);
+        public Task DeleteAsync(Guid id, bool save = true, CancellationToken ct = default);
         public Task SaveChangesAsync(CancellationToken ct = default);
     }
 }

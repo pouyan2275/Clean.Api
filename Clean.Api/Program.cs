@@ -1,7 +1,5 @@
-﻿using Application;
-using Domain.Interfaces.Repositories;
-using Infrastructure;
-using Infrastructure.Data.Repositories;
+﻿using Application.Bases;
+using Infrastructure.Bases;
 using Serilog;
 
 

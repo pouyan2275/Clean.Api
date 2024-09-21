@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Bases.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

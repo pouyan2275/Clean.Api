@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Repositories;
+﻿using Domain.Bases.Interfaces.Entities;
+using Domain.Bases.Interfaces.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,11 @@ namespace Api.Controllers;
 /// <param name="repository"></param>
 [Route("api/[controller]")]
 [ApiController]
-public class CrudController<TEntity>(IRepository<TEntity> repository) : CrudController<TEntity, TEntity, TEntity>(repository) where TEntity : new() { }
-public class CrudController<TDto,TEntity>(IRepository<TEntity> repository)  : CrudController<TDto, TDto, TEntity>  (repository) where TEntity : new() { }
+public class CrudController<TEntity>(IRepository<TEntity> repository) : CrudController<TEntity, TEntity, TEntity>(repository) where TEntity : IBaseEntity { }
+public class CrudController<TDto,TEntity>(IRepository<TEntity> repository)  : CrudController<TDto, TDto, TEntity>  (repository) where TEntity : IBaseEntity { }
 
 public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
-    where TEntity : new()
+    where TEntity : IBaseEntity
 {
     private readonly IRepository<TEntity> _repository;
 
@@ -67,11 +68,11 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
 
         var entity = Tentity.Adapt<TEntity>();
 
-        entity?.GetType().GetProperty("CreatedOn")?.SetValue(entity, DateTime.UtcNow);
-        entity?.GetType().GetProperty("CreatedBy")?.SetValue(entity, default(Guid));
-        entity?.GetType().GetProperty("Id")?.SetValue(entity, newId);
+        entity!.CreatedOn = DateTime.UtcNow;
+        entity!.CreatedBy = default(Guid);
+        entity!.Id = newId;
  
-        await _repository.AddAsync(entity, ct:ct);
+        await _repository.AddAsync(entity!, ct:ct);
 
         var result = await _repository.GetByIdAsync(newId,ct);
 
@@ -92,11 +93,11 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
 
         entity = Tentity.Adapt(entity);
 
-        entity?.GetType().GetProperty("ModifiedOn")?.SetValue(entity, DateTime.UtcNow);
-        entity?.GetType().GetProperty("ModifiedBy")?.SetValue(entity, default(Guid));
-        entity?.GetType().GetProperty("Id")?.SetValue(entity, id);
+        entity!.ModifiedOn = DateTime.UtcNow;
+        entity!.ModifiedBy = default(Guid);
+        entity!.Id = id;
 
-        await _repository.UpdateAsync(entity,ct:ct);
+        await _repository.UpdateAsync(entity!,ct:ct);
         var result = await _repository.GetByIdAsync(id, ct);
         return Ok(result);
     }
