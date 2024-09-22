@@ -1,9 +1,8 @@
 ﻿using Api.Bases.Controllers;
-using Application.Bases.Interfaces.IServices;
+using Application.Bases.Dtos.Paginations;
 using Application.Dtos.Categories;
 using Application.IServices;
 using Domain.Entities;
-using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -12,8 +11,20 @@ namespace Api.Controllers
     [ApiController]
     public class CategoryController : CrudController<CategoryDto, CategoryDtoSelect, Category>
     {
-        public CategoryController(ICategoryService crudService) : base(crudService)
+        private readonly ICategoryService _categoryService;
+
+        public CategoryController(ICategoryService categoryService) : base(categoryService)
         {
+            _categoryService = categoryService;
         }
+
+        [HttpPost("[action]")]
+        public ActionResult<Category> GetCategories(PaginationDto pagination) 
+        {
+            var result = _categoryService.Pagination(pagination);
+            return Ok(result);
+        }
+
+
     }
 }
