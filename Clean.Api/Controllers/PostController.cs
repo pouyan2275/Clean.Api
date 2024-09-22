@@ -1,4 +1,5 @@
 ﻿using Api.Bases.Controllers;
+using Application.Bases.Interfaces.IServices;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,7 @@ namespace Api.Controllers
     [ApiController]
     public class PostController : CrudController<Post, Post, Post>
     {
-        public PostController(IPostRepository repository) : base(repository)
+        public PostController(ICrudService<Post, Post, Post> crudService) : base(crudService)
         {
         }
     }

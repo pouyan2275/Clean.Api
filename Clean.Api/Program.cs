@@ -8,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddApplication()
-    .AddInfrastructure()
     .AddPresentation();
 
 builder.Host.UseSerilog((context, configuration) =>

@@ -1,4 +1,5 @@
-﻿using Domain.Bases.Interfaces.Entities;
+﻿using Application.Bases.Interfaces.IServices;
+using Domain.Bases.Interfaces.Entities;
 using Domain.Bases.Interfaces.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
@@ -11,17 +12,17 @@ namespace Api.Bases.Controllers;
 /// <param name="repository"></param>
 [Route("api/[controller]")]
 [ApiController]
-public class CrudController<TEntity>(IRepository<TEntity> repository) : CrudController<TEntity, TEntity, TEntity>(repository) where TEntity : IBaseEntity { }
-public class CrudController<TDto, TEntity>(IRepository<TEntity> repository) : CrudController<TDto, TDto, TEntity>(repository) where TEntity : IBaseEntity { }
+public class CrudController<TEntity>(ICrudService<TEntity> crudService) : CrudController<TEntity, TEntity, TEntity>(crudService) where TEntity : IBaseEntity { }
+public class CrudController<TDto, TEntity>(ICrudService<TDto, TEntity> crudService) : CrudController<TDto, TDto, TEntity>(crudService) where TEntity : IBaseEntity { }
 
 public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     where TEntity : IBaseEntity
 {
-    private readonly IRepository<TEntity> _repository;
+    private readonly ICrudService<TDto,TDtoSelect,TEntity> _crudService;
 
-    public CrudController(IRepository<TEntity> repository)
+    public CrudController(ICrudService<TDto, TDtoSelect, TEntity> crudService)
     {
-        _repository = repository;
+        _crudService = crudService;
     }
     /// <summary>
     /// Get By Id
@@ -32,7 +33,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpGet("[action]/{id}")]
     public virtual async Task<ActionResult<TDtoSelect?>> GetById(Guid id, CancellationToken ct = default)
     {
-        var result = (await _repository.GetByIdAsync(id, ct)).Adapt<TDtoSelect>();
+        var result = (await _crudService.GetByIdAsync(id, ct)).Adapt<TDtoSelect>();
         return Ok(result);
     }
 
@@ -44,7 +45,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpGet("[action]")]
     public virtual async Task<ActionResult<List<TDtoSelect>>> GetAll(CancellationToken ct = default)
     {
-        var result = (await _repository.GetAllAsync(ct)).Adapt<List<TDtoSelect>>();
+        var result = (await _crudService.GetAllAsync(ct)).Adapt<List<TDtoSelect>>();
         return Ok(result);
     }
 
@@ -57,24 +58,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpPost("[action]")]
     public virtual async Task<ActionResult<TDtoSelect>> Add(TDto Tentity, CancellationToken ct = default)
     {
-        Guid newId;
-        bool guidUsed;
-
-        do
-        {
-            newId = Guid.NewGuid();
-            guidUsed = await _repository.GetByIdAsync(newId, ct) != null;
-        } while (guidUsed);
-
-        var entity = Tentity.Adapt<TEntity>();
-
-        entity!.CreatedOn = DateTime.UtcNow;
-        entity!.CreatedBy = default(Guid);
-        entity!.Id = newId;
-
-        await _repository.AddAsync(entity!, ct: ct);
-
-        var result = await _repository.GetByIdAsync(newId, ct);
+        var result = await _crudService.AddAsync(Tentity, ct);
 
         return Ok(result);
     }
@@ -89,16 +73,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpPut("[action]/{id}")]
     public virtual async Task<ActionResult<TDtoSelect>> Update(Guid id, TDto Tentity, CancellationToken ct = default)
     {
-        TEntity entity = await _repository.GetByIdAsync(id, ct) ?? throw new Exception("Not Found");
-
-        entity = Tentity.Adapt(entity);
-
-        entity!.ModifiedOn = DateTime.UtcNow;
-        entity!.ModifiedBy = default(Guid);
-        entity!.Id = id;
-
-        await _repository.UpdateAsync(entity!, ct: ct);
-        var result = await _repository.GetByIdAsync(id, ct);
+        var result = await _crudService.UpdateAsync(id, Tentity, ct);
         return Ok(result);
     }
 
@@ -111,7 +86,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpDelete("[action]/{id}")]
     public virtual async Task<ActionResult> Delete(Guid id, CancellationToken ct = default)
     {
-        await _repository.DeleteAsync(id, ct: ct);
+        await _crudService.DeleteAsync(id, ct: ct);
         return Ok();
     }
 }
