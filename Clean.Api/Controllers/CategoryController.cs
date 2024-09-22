@@ -1,8 +1,7 @@
 ﻿using Api.Bases.Controllers;
+using Application.Dtos.Categories;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
-using Infrastructure.Dtos.Categories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers

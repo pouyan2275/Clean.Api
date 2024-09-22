@@ -1,5 +1,5 @@
 ﻿
-namespace Infrastructure.Dtos.Categories;
+namespace Application.Dtos.Categories;
 
 public class CategoryDto
 {

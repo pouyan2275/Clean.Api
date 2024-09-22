@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace Api.Bases;
+﻿namespace Api.Bases;
 
 public static class DependencyInjection
 {
