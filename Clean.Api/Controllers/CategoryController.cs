@@ -17,14 +17,5 @@ namespace Api.Controllers
         {
             _categoryService = categoryService;
         }
-
-        [HttpPost("[action]")]
-        public ActionResult<Category> GetCategories(PaginationDto pagination) 
-        {
-            var result = _categoryService.Pagination(pagination);
-            return Ok(result);
-        }
-
-
     }
 }

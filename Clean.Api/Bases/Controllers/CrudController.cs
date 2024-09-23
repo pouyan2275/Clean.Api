@@ -1,6 +1,8 @@
-﻿using Application.Bases.Interfaces.IServices;
+﻿using Application.Bases.Dtos.Paginations;
+using Application.Bases.Interfaces.IServices;
 using Domain.Bases.Interfaces.Entities;
 using Domain.Bases.Interfaces.Repositories;
+using Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
@@ -88,5 +90,16 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     {
         await _crudService.DeleteAsync(id, ct: ct);
         return Ok();
+    }
+    /// <summary>
+    /// pagination
+    /// </summary>
+    /// <param name="pagination"></param>
+    /// <returns></returns>
+    [HttpPost("[action]")]
+    public ActionResult<Category> Pagination(PaginationDto pagination)
+    {
+        var result = _crudService.Pagination(pagination);
+        return Ok(result);
     }
 }

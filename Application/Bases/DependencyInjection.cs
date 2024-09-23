@@ -24,7 +24,7 @@ public static class DependencyInjection
 
     public static string AttributeDescription(this object value)
     {
-        FieldInfo? fi = value.GetType().GetField(value.ToString());
+        FieldInfo? fi = value.GetType().GetField(value.ToString() ?? "");
 
         DescriptionAttribute[]? attributes = fi?.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
 
@@ -33,7 +33,7 @@ public static class DependencyInjection
             return attributes.First().Description;
         }
 
-        return value.ToString();
+        return value.ToString() ?? "";
     }
 
 }

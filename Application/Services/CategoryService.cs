@@ -20,12 +20,4 @@ public class CategoryService : CrudService<CategoryDto, CategoryDtoSelect, Categ
     {
         _categoryRepository = repository;
     }
-
-    public static string GetJsonPropertyName(Enum value)
-    {
-        var jsonProperty = JsonSerializer.Deserialize<Enum>(value.ToString());
-        return jsonProperty.ToString();
-    }
-
-
 }
