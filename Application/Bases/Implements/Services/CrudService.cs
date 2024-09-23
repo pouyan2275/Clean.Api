@@ -1,7 +1,11 @@
-﻿using Application.Bases.Interfaces.IServices;
+﻿using Application.Bases.Dtos.Paginations;
+using Application.Bases.Interfaces.IServices;
 using Domain.Bases.Interfaces.Entities;
 using Domain.Bases.Interfaces.Repositories;
+using Domain.Entities;
 using Mapster;
+using Plainquire.Page;
+using System.Linq.Dynamic.Core;
 
 namespace Application.Bases.Implements.Services;
 
@@ -71,5 +75,36 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
         await _repository.UpdateAsync(entity!, ct: ct);
         var result = _repository.TableNoTracking.First(x => x.Id == id).Adapt<TDtoSelect>();
         return result;
+    }
+
+    public IEnumerable<TEntity> Pagination(PaginationDto paginationDto)
+    {
+        var table = _repository.TableNoTracking;
+
+        paginationDto.PageNumber = paginationDto.PageNumber <= 0 ? 1 : paginationDto.PageNumber;
+        paginationDto.PageSize = paginationDto.PageSize <= 0 ? int.MaxValue : paginationDto.PageSize;
+
+        if (paginationDto?.Filter?.Count > 0)
+        {
+            var sortString = "x => ";
+            paginationDto.Filter.ForEach(x => {
+                sortString += $"x.{x.Key} {x.Operator.AttributeDescription()} \"{x.Value}\" and";
+            });
+            sortString = sortString[..(sortString.Length - 3)];
+            table = table.Where(sortString);
+        }
+
+        if (paginationDto?.Sort?.Count > 0)
+        {
+            var sortString = "";
+            paginationDto.Sort.ForEach(x => sortString += x.Key + (x.Desc ? " desc ," : " ,"));
+            sortString = sortString[..(sortString.Length - 1)];
+            table = table.OrderBy(sortString);
+        }
+
+        table = table.Page(paginationDto?.PageNumber, paginationDto?.PageSize);
+
+        return table;
+
     }
 }

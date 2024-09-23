@@ -5,22 +5,22 @@ namespace Application.Bases.Dtos.Paginations;
 
 public enum FilterOperator
 {
-    [JsonPropertyName("%")]
+    [Description("%")]
     Contains = 0,
-    [JsonPropertyName("==")]
+    [Description("=")]
     Equal = 1,
-    [JsonPropertyName("!=")]
+    [Description("!=")]
     NotEqual = 2,
-    [JsonPropertyName("<=")]
+    [Description("<=")]
     LessThanOrEqual = 3,
-    [JsonPropertyName("<")]
+    [Description("<")]
     LessThan = 4,
-    [JsonPropertyName(">=")]
+    [Description(">=")]
     GreaterThanOrEqual = 5,
-    [JsonPropertyName(">")]
+    [Description(">")]
     GreaterThan = 6,
-    [JsonPropertyName("IS NULL")]
+    [Description("IS NULL")]
     IsNull = 7,
-    [JsonPropertyName("IS NOT NULL")]
+    [Description("IS NOT NULL")]
     NotNull = 8
 }

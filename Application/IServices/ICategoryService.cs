@@ -7,6 +7,5 @@ namespace Application.IServices
 {
     public interface ICategoryService : ICrudService<CategoryDto,CategoryDtoSelect,Category>
     {
-        public IEnumerable<Category> Pagination(PaginationDto pagination);
     }
 }

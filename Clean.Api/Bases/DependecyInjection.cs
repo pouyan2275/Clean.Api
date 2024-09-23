@@ -10,15 +10,12 @@ public static class DependencyInjection
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
 
-        services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+        services.AddControllers();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(options => options
+        services.AddSwaggerGen(
+            options => options
             .SchemaFilter<EnumSchemaFilter>()
             );
         return services;

@@ -1,4 +1,6 @@
-﻿namespace Application.Bases.Interfaces.IServices
+﻿using Application.Bases.Dtos.Paginations;
+
+namespace Application.Bases.Interfaces.IServices
 {
     public interface ICrudService<TDto,TDtoSelect,TEntity>
     {
@@ -7,6 +9,7 @@
         public Task<TDtoSelect> AddAsync(TDto Tentity, CancellationToken ct = default);
         public Task<TDtoSelect> UpdateAsync(Guid id, TDto Tentity, CancellationToken ct = default);
         public Task DeleteAsync(Guid id, CancellationToken ct = default);
+        public IEnumerable<TEntity> Pagination(PaginationDto paginationDto);
     }
 
     public interface ICrudService<TDto, TEntity> : ICrudService<TDto,TDto,TEntity>
