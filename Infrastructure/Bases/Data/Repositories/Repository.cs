@@ -9,8 +9,8 @@ public class Repository<TEntity> : IRepository<TEntity>
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly DbSet<TEntity> Entity;
-    public IQueryable<TEntity> Table { get { return _dbContext.Set<TEntity>().AsTracking(); } }
-    public IQueryable<TEntity> TableNoTracking { get { return _dbContext.Set<TEntity>().AsNoTracking(); } }
+    public IQueryable<TEntity> Table { get { return _dbContext.Set<TEntity>().AsTracking().AsQueryable(); } }
+    public IQueryable<TEntity> TableNoTracking { get { return _dbContext.Set<TEntity>().AsNoTracking().AsQueryable(); } }
 
     public Repository(ApplicationDbContext dbContext)
     {

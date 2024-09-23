@@ -5,9 +5,7 @@ using Application.IServices;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Plainquire.Page;
-using Plainquire.Sort;
-using System.Linq.Expressions;
-
+using System.Linq.Dynamic.Core;
 namespace Application.Services;
 
 public class CategoryService : CrudService<CategoryDto, CategoryDtoSelect, Category>, ICategoryService
@@ -20,8 +18,8 @@ public class CategoryService : CrudService<CategoryDto, CategoryDtoSelect, Categ
     }
     public IEnumerable<Category> Pagination(PaginationDto paginationDto)
     {
-        IQueryable<Category> result;
-        var sort = new EntitySort<Category>();
+        var table = _categoryRepository.TableNoTracking;
+
 
         paginationDto.PageNumber = paginationDto.PageNumber <= 0 ? 1 : paginationDto.PageNumber; 
         paginationDto.PageSize = paginationDto.PageSize <= 0 ? int.MaxValue : paginationDto.PageSize;
@@ -29,18 +27,19 @@ public class CategoryService : CrudService<CategoryDto, CategoryDtoSelect, Categ
         if (paginationDto?.Filter?.Count > 0)
         {
         }
+
         if (paginationDto?.Sort?.Count > 0)
         {
-            sort.Add(x => x.GetType().GetProperty("CreatedOn")! , paginationDto.Sort[0].Desc ? SortDirection.Descending : SortDirection.Ascending);
+            var sortString = "";
+            paginationDto.Sort.ForEach(x => sortString += x.Key + (x.Desc ? " desc ,": " ,"));
+            sortString = sortString[..(sortString.Length - 1)];
+            table = table.OrderBy(sortString);
         }
-        //sort
-        //        .Add(x => x.CreatedOn, SortDirection.Descending)
-        //        .Add(x => x.Title, SortDirection.Descending);
 
-        result = _categoryRepository.TableNoTracking.OrderBy(sort).Page(paginationDto.PageNumber,paginationDto.PageSize);
-        //var requestedOrders = _categoryRepository.TableNoTracking.Where(filter).OrderBy(sort).Page(page);
+        //table = table.Where(x => (x.GetType().GetProperty("CreatedOn")!.GetValue(x)) != null);
+        table = table.Page(paginationDto?.PageNumber,paginationDto?.PageSize);
 
-        return result;
+        return table;
 
     }
 

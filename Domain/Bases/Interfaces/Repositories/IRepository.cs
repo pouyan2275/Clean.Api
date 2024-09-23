@@ -1,6 +1,10 @@
-﻿namespace Domain.Bases.Interfaces.Repositories
+﻿using Domain.Bases.Interfaces.Entities;
+using System.Collections.Generic;
+
+namespace Domain.Bases.Interfaces.Repositories
 {
     public interface IRepository<TEntity>
+        where TEntity : IBaseEntity
     {
         public IQueryable<TEntity> Table { get; }
         public IQueryable<TEntity> TableNoTracking { get; }
