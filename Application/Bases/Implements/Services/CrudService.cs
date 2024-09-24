@@ -88,7 +88,21 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
         {
             var sortString = "x => ";
             paginationDto.Filter.ForEach(x => {
-                sortString += $"x.{x.Key} {x.Operator.AttributeDescription()} \"{x.Value}\" and";
+                switch (x.Operator)
+                {
+                    case FilterOperator.Contains:
+                        sortString += $" x.{x.Key}.ToString().Contains(\"{x.Value}\") and";
+                        break;
+                    case FilterOperator.IsNull:
+                        sortString += $" x.{x.Key} == null and";
+                        break;
+                    case FilterOperator.NotNull:
+                        sortString += $" x.{x.Key} != null and";
+                        break;
+                    default:
+                        sortString += $" x.{x.Key} {x.Operator.AttributeDescription()} \"{x.Value}\" and";
+                        break;
+                }
             });
             sortString = sortString[..(sortString.Length - 3)];
             table = table.Where(sortString);

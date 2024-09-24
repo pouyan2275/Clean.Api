@@ -7,7 +7,7 @@ public enum FilterOperator
 {
     [Description("%")]
     Contains = 0,
-    [Description("=")]
+    [Description("==")]
     Equal = 1,
     [Description("!=")]
     NotEqual = 2,
