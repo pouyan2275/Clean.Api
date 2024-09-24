@@ -2,7 +2,6 @@
 using Application.Bases.Interfaces.IServices;
 using Domain.Bases.Interfaces.Entities;
 using Domain.Bases.Interfaces.Repositories;
-using Domain.Entities;
 using Mapster;
 using Plainquire.Page;
 using System.Linq.Dynamic.Core;
@@ -77,7 +76,7 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
         return result;
     }
 
-    public IEnumerable<TEntity> Pagination(PaginationDto paginationDto)
+    public PaginationDtoSelect<TEntity> Pagination(PaginationDto paginationDto)
     {
         var table = _repository.TableNoTracking;
 
@@ -118,7 +117,11 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
 
         table = table.Page(paginationDto?.PageNumber, paginationDto?.PageSize);
 
-        return table;
-
+        var paginationDtoSelect = new PaginationDtoSelect<TEntity>()
+        {
+            Count = table.Count(),
+            Data = table
+        };
+        return paginationDtoSelect;
     }
 }
