@@ -98,7 +98,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpPost("[action]")]
     public ActionResult<TDtoSelect> Pagination(PaginationDto pagination)
     {
-        var result = _crudService.Pagination(pagination);
+        var result = _crudService.PaginationAsync(pagination);
         return Ok(result);
     }
 }

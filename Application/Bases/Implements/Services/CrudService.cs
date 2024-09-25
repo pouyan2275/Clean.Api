@@ -3,6 +3,7 @@ using Application.Bases.Interfaces.IServices;
 using Domain.Bases.Interfaces.Entities;
 using Domain.Bases.Interfaces.Repositories;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using Plainquire.Page;
 using System.Linq.Dynamic.Core;
 
@@ -23,24 +24,24 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
     }
     public virtual async Task<TDtoSelect> AddAsync(TDto Tentity, CancellationToken ct = default)
     {
-        Guid newId;
+        Guid id;
         bool guidUsed;
 
         do
         {
-            newId = Guid.NewGuid();
-            guidUsed = await _repository.GetByIdAsync(newId, ct) != null;
+            id = Guid.NewGuid();
+            guidUsed = await _repository.GetByIdAsync(id, ct) != null;
         } while (guidUsed);
 
         var entity = Tentity.Adapt<TEntity>();
 
         entity!.CreatedOn = DateTime.UtcNow;
         entity!.CreatedBy = default(Guid);
-        entity!.Id = newId;
+        entity!.Id = id;
 
         await _repository.AddAsync(entity!, ct: ct);
 
-        var result = _repository.TableNoTracking.First(x => x.Id == newId).Adapt<TDtoSelect>();
+        var result = await _repository.TableNoTracking.Where(x => x.Id == id).ProjectToType<TDtoSelect>().SingleAsync();
         return result;
     }
 
@@ -51,7 +52,7 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
 
     public virtual async Task<List<TDtoSelect>> GetAllAsync(CancellationToken ct = default)
     {
-        var result = (await _repository.GetAllAsync(ct)).Adapt<List<TDtoSelect>>();
+        var result = await _repository.TableNoTracking.ProjectToType<TDtoSelect>().ToListAsync(cancellationToken: ct);
         return result;
     }
 
@@ -72,11 +73,11 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
         entity!.Id = id;
 
         await _repository.UpdateAsync(entity!, ct: ct);
-        var result = _repository.TableNoTracking.First(x => x.Id == id).Adapt<TDtoSelect>();
+        var result = await _repository.TableNoTracking.Where(x => x.Id == id).ProjectToType<TDtoSelect>().SingleAsync();
         return result;
     }
 
-    public PaginationDtoSelect<TDtoSelect> Pagination(PaginationDto paginationDto)
+    public async Task<PaginationDtoSelect<TDtoSelect>> PaginationAsync(PaginationDto paginationDto)
     {
         var table = _repository.TableNoTracking;
 
@@ -116,11 +117,12 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
         }
 
         table = table.Page(paginationDto?.PageNumber, paginationDto?.PageSize);
+        var result = await table.ProjectToType<TDtoSelect>().ToListAsync();
 
         var paginationDtoSelect = new PaginationDtoSelect<TDtoSelect>()
         {
-            Count = table.Count(),
-            Data = table.Adapt<IEnumerable<TDtoSelect>>()
+            Count = result.Count,
+            Data = result
         };
         return paginationDtoSelect;
     }

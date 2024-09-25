@@ -35,6 +35,7 @@ public class Repository<TEntity> : IRepository<TEntity>
         var result = await Entity.ToListAsync(cancellationToken: ct);
         return result;
     }
+
     public virtual async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         var record = await TableNoTracking.FirstOrDefaultAsync(x => x.Id == id, cancellationToken: ct);

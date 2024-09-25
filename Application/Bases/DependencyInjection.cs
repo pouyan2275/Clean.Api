@@ -17,8 +17,9 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddInfrastructure();
-        services.AddScoped<ICategoryService, CategoryService>();
-
+        services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<IDegreeService, DegreeService>();
+        services.AddScoped(typeof(ICrudService<>), typeof(CrudService<>));
         return services;
     }
 

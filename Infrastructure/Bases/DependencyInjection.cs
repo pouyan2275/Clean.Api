@@ -11,8 +11,8 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        services.AddScoped<ICategoryRepository, CategoryRepository>();
-        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<IDegreeRepository, DegreeRepository>();
 
         return services;
     }
