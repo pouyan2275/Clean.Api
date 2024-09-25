@@ -1,9 +1,7 @@
 ﻿using Domain.Bases.Interfaces.Repositories;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Data.Repositories;
-using Infrastructure.Bases.Data;
 using Infrastructure.Bases.Data.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Bases;

@@ -1,8 +1,6 @@
-﻿using Api.Presentation;
-using Application.Bases.Dtos.Paginations;
+﻿using Application.Bases.Dtos.Paginations;
 using Application.Bases.Interfaces.IServices;
 using Domain.Bases.Interfaces.Entities;
-using Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +30,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="id"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpGet("[action]/{id}")]
+    [HttpGet("{id}")]
     public virtual async Task<ActionResult<TDtoSelect?>> GetById(Guid id, CancellationToken ct = default)
     {
         var result = (await _crudService.GetByIdAsync(id, ct)).Adapt<TDtoSelect>();
@@ -44,7 +42,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// </summary>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpGet("[action]")]
+    [HttpGet("")]
     public virtual async Task<ActionResult<List<TDtoSelect>>> GetAll(CancellationToken ct = default)
     {
        
@@ -58,7 +56,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="Tentity"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpPost("[action]")]
+    [HttpPost("")]
     public virtual async Task<ActionResult<TDtoSelect>> Add(TDto Tentity, CancellationToken ct = default)
     {
         var result = await _crudService.AddAsync(Tentity, ct);
@@ -73,7 +71,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="Tentity"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpPut("[action]/{id}")]
+    [HttpPut("{id}")]
     public virtual async Task<ActionResult<TDtoSelect>> Update(Guid id, TDto Tentity, CancellationToken ct = default)
     {
         var result = await _crudService.UpdateAsync(id, Tentity, ct);
@@ -86,7 +84,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="id"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpDelete("[action]/{id}")]
+    [HttpDelete("{id}")]
     public virtual async Task<ActionResult> Delete(Guid id, CancellationToken ct = default)
     {
         await _crudService.DeleteAsync(id, ct: ct);
