@@ -1,7 +1,7 @@
-﻿using Application.Bases.Dtos.Paginations;
+﻿using Api.Presentation;
+using Application.Bases.Dtos.Paginations;
 using Application.Bases.Interfaces.IServices;
 using Domain.Bases.Interfaces.Entities;
-using Domain.Bases.Interfaces.Repositories;
 using Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +47,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     [HttpGet("[action]")]
     public virtual async Task<ActionResult<List<TDtoSelect>>> GetAll(CancellationToken ct = default)
     {
+       
         var result = (await _crudService.GetAllAsync(ct)).Adapt<List<TDtoSelect>>();
         return Ok(result);
     }
@@ -97,7 +98,7 @@ public class CrudController<TDto, TDtoSelect, TEntity> : ControllerBase
     /// <param name="pagination"></param>
     /// <returns></returns>
     [HttpPost("[action]")]
-    public ActionResult<Category> Pagination(PaginationDto pagination)
+    public ActionResult<TDtoSelect> Pagination(PaginationDto pagination)
     {
         var result = _crudService.Pagination(pagination);
         return Ok(result);

@@ -1,11 +1,16 @@
 ﻿using Api.Bases;
 using Application.Bases;
 using Infrastructure.Bases;
+using Infrastructure.Bases.Data;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddDbContext<ApplicationDbContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
+});
 builder.Services
     .AddApplication()
     .AddPresentation();

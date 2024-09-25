@@ -76,7 +76,7 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
         return result;
     }
 
-    public PaginationDtoSelect<TEntity> Pagination(PaginationDto paginationDto)
+    public PaginationDtoSelect<TDtoSelect> Pagination(PaginationDto paginationDto)
     {
         var table = _repository.TableNoTracking;
 
@@ -117,10 +117,10 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
 
         table = table.Page(paginationDto?.PageNumber, paginationDto?.PageSize);
 
-        var paginationDtoSelect = new PaginationDtoSelect<TEntity>()
+        var paginationDtoSelect = new PaginationDtoSelect<TDtoSelect>()
         {
             Count = table.Count(),
-            Data = table
+            Data = table.Adapt<IEnumerable<TDtoSelect>>()
         };
         return paginationDtoSelect;
     }
