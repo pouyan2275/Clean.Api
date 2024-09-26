@@ -77,47 +77,50 @@ public class CrudService<TDto, TDtoSelect, TEntity> : ICrudService<TDto, TDtoSel
         return result;
     }
 
-    public async Task<PaginationDtoSelect<TDtoSelect>> PaginationAsync(PaginationDto paginationDto)
+    public async Task<PaginationDtoSelect<TDtoSelect>> PaginationAsync(PaginationDto paginationDto,CancellationToken ct = default)
     {
         var table = _repository.TableNoTracking;
+
 
         paginationDto.PageNumber = paginationDto.PageNumber <= 0 ? 1 : paginationDto.PageNumber;
         paginationDto.PageSize = paginationDto.PageSize <= 0 ? int.MaxValue : paginationDto.PageSize;
 
         if (paginationDto?.Filter?.Count > 0)
         {
-            var sortString = "x => ";
+            var filterString = "x => ";
+
             paginationDto.Filter.ForEach(x => {
                 switch (x.Operator)
                 {
                     case FilterOperator.Contains:
-                        sortString += $" x.{x.Key}.ToString().Contains(\"{x.Value}\") and";
+                        filterString += $" x.{x.Key}.ToString().Contains(\"{x.Value}\") and";
                         break;
                     case FilterOperator.IsNull:
-                        sortString += $" x.{x.Key} == null and";
+                        filterString += $" x.{x.Key} == null and";
                         break;
                     case FilterOperator.NotNull:
-                        sortString += $" x.{x.Key} != null and";
+                        filterString += $" x.{x.Key} != null and";
                         break;
                     default:
-                        sortString += $" x.{x.Key} {x.Operator.AttributeDescription()} \"{x.Value}\" and";
+                        filterString += $" x.{x.Key} {x.Operator.AttributeDescription()} \"{x.Value}\" and";
                         break;
                 }
             });
-            sortString = sortString[..(sortString.Length - 3)];
-            table = table.Where(sortString);
+            filterString = filterString[..(filterString.Length - 3)];
+            table = table.Where(filterString);
         }
 
         if (paginationDto?.Sort?.Count > 0)
         {
             var sortString = "";
+
             paginationDto.Sort.ForEach(x => sortString += x.Key + (x.Desc ? " desc ," : " ,"));
             sortString = sortString[..(sortString.Length - 1)];
             table = table.OrderBy(sortString);
         }
 
         table = table.Page(paginationDto?.PageNumber, paginationDto?.PageSize);
-        var result = await table.ProjectToType<TDtoSelect>().ToListAsync();
+        var result = await table.ProjectToType<TDtoSelect>().ToListAsync(ct);
 
         var paginationDtoSelect = new PaginationDtoSelect<TDtoSelect>()
         {
