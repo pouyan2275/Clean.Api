@@ -81,3 +81,10 @@
         overflow-y: auto;
     }
 }
+
+
+/*Custom Css*/
+
+span{
+    margin-left:4px;
+}
